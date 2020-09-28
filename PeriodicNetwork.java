@@ -6,19 +6,17 @@
 // directly to Merger[2K]. Bitonic[2] networks
 // consists of a single Balancer.
 class PeriodicNetwork implements CountingNetwork {
-  CountingNetwork[] halves;
-  CountingNetwork merger;
+  CountingNetwork[] blocks;
   final int width;
   // halves: top, bottom Bitonic[K]
   // merger: Merger[2K] connected to both Bitonic[K]
   // width: number of inputs/outputs
 
   public PeriodicNetwork(int w) {
-    if (w > 2) halves = new PeriodicNetwork[] {
-      new PeriodicNetwork(w/2),
-      new PeriodicNetwork(w/2)
-    };
-    merger = new BlockNetwork(w);
+    int B = Integer.numberOfLeadingZeros(w);
+    blocks = new CountingNetwork[B];
+    for (int i=0; i<B; i++)
+      blocks[i] = new BlockNetwork(w);
     width = w;
   }
 
@@ -27,12 +25,8 @@ class PeriodicNetwork implements CountingNetwork {
   // 3. Traverse connected Merger[2K].
   @Override
   public int traverse(int x) {
-    int w = width;
-    int h = x / (w/2); // 1
-    if (w > 2) {                         // 2
-      x = halves[h].traverse(x % (w/2)); // 2
-      x = x + h * (w/2);                 // 2
-    }
-    return merger.traverse(x); // 3
+    for (CountingNetwork b : blocks)
+      x = b.traverse(x);
+    return x;
   }
 }

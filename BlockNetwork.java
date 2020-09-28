@@ -8,21 +8,19 @@
 // a Balancer. When K is 1, Merger[2K] is a single
 // Balancer.
 class BlockNetwork implements CountingNetwork {
+  CountingNetwork layer;
   CountingNetwork[] halves;
-  CountingNetwork[] balancers;
   final int width;
   // halves: top, bottom Merger[K]
   // balancers: layers of Balancers
   // width: number of inputs/outputs
 
   public BlockNetwork(int w) {
+    layer = new LayerNetwork(w);
     if (w > 2) halves = new BlockNetwork[] {
       new BlockNetwork(w/2),
       new BlockNetwork(w/2)
     };
-    balancers = new Balancer[w/2];
-    for (int i=0; i<w/2; i++)
-      balancers[i] = new Balancer();
     width = w;
   }
 
@@ -32,9 +30,9 @@ class BlockNetwork implements CountingNetwork {
   @Override
   public int traverse(int x) {
     int w = width;
-    int h = x < w/2? x%2 : 1 - x%2; // 1
-    if (w <= 2) x = x/2;            // 1
-    else x = halves[h].traverse(x/2);      // 2
-    return x*2 + balancers[x].traverse(0); // 3
+    x = layer.traverse(x);
+    if (w <= 2) return x;
+    int h = x / (w/2);
+    return h*(w/2) + halves[h].traverse(x);
   }
 }

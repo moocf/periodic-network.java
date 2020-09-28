@@ -8,19 +8,13 @@
 // a Balancer. When K is 1, Merger[2K] is a single
 // Balancer.
 class LayerNetwork implements CountingNetwork {
-  CountingNetwork[] halves;
   CountingNetwork[] balancers;
   final int width;
-  // halves: top, bottom Merger[K]
-  // balancers: layers of Balancers
+  // balancers: layer of Balancers
   // width: number of inputs/outputs
 
   public LayerNetwork(int w) {
-    if (w > 2) halves = new LayerNetwork[] {
-      new LayerNetwork(w/2),
-      new LayerNetwork(w/2)
-    };
-    balancers = new Balancer[w/2];
+    balancers = new CountingNetwork[w/2];
     for (int i=0; i<w/2; i++)
       balancers[i] = new Balancer();
     width = w;
@@ -32,9 +26,8 @@ class LayerNetwork implements CountingNetwork {
   @Override
   public int traverse(int x) {
     int w = width;
-    int h = x < w/2? x%2 : 1 - x%2; // 1
-    if (w <= 2) x = x/2;            // 1
-    else x = halves[h].traverse(x/2);      // 2
-    return x*2 + balancers[x].traverse(0); // 3
+    int b = x < w/2? x : w-1-x;
+    int y = balancers[b].traverse(0);
+    return y == 0? b : w-1-b;
   }
 }
