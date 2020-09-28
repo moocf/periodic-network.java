@@ -1,15 +1,9 @@
-// Each Bitonic[2K] consists of 2 Bitonic[K]
-// networks followed by a Merger[2K]. The top
-// Bitonic[K] is connected to top-half inputs, and
-// bottom Bitonic[K] is connected to bottom-half
-// inputs. Outputs of both Bitonic[K] are connected
-// directly to Merger[2K]. Bitonic[2] networks
-// consists of a single Balancer.
+// Each Periodic[K] consists of log2(K) Block[K]
+// networks connected sequentially.
 class PeriodicNetwork implements CountingNetwork {
   CountingNetwork[] blocks;
   final int width;
-  // halves: top, bottom Bitonic[K]
-  // merger: Merger[2K] connected to both Bitonic[K]
+  // blocks: sequential log2 Block[2K]s
   // width: number of inputs/outputs
 
   public PeriodicNetwork(int w) {
@@ -20,13 +14,11 @@ class PeriodicNetwork implements CountingNetwork {
     width = w;
   }
 
-  // 1. Find connected Bitonic[K].
-  // 2. Traverse connected Bitonic[K].
-  // 3. Traverse connected Merger[2K].
+  // 1. Traverse all Block[2K]s sequentially.
   @Override
   public int traverse(int x) {
-    for (CountingNetwork b : blocks)
-      x = b.traverse(x);
+    for (CountingNetwork b : blocks) // 1
+      x = b.traverse(x);             // 1
     return x;
   }
 }

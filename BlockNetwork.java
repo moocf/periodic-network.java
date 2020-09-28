@@ -1,18 +1,15 @@
-// Each Merger[2K] consists of 2 Merger[K] networks
-// followed by a layer of Balancers. The top
-// Merger[K] takes even inputs from top-half and
-// odd inputs from bottom-half. The bottom
-// Merger[K] takes odd inputs from top-half and
-// even inputs form bottom half. The respective
-// output of each Merger[K] is then combined with
-// a Balancer. When K is 1, Merger[2K] is a single
-// Balancer.
+// Each Block[2K] consists of Layer[2K] network
+// followed by top and bottom Block[K] networks.
+// Top Block[K] is connected to top-half of
+// outputs of Layer[2K]. Bottom Block[K] is
+// connected to the bottom-half. When K is 1,
+// Block[2K] is a Balancer.
 class BlockNetwork implements CountingNetwork {
   CountingNetwork layer;
   CountingNetwork[] halves;
   final int width;
-  // halves: top, bottom Merger[K]
-  // balancers: layers of Balancers
+  // layer: Layer[2K] network
+  // halves: top, bottom Block[K]
   // width: number of inputs/outputs
 
   public BlockNetwork(int w) {
@@ -24,15 +21,16 @@ class BlockNetwork implements CountingNetwork {
     width = w;
   }
 
-  // 1. Find connected Merger[K].
-  // 2. Traverse connected Merger[K].
-  // 3. Traverse connected balancer.
+  // 1. Traverse Layer[2K].
+  // 2. Find connected Block[K].
+  // 3. Traverse connected Block[K].
   @Override
   public int traverse(int x) {
     int w = width;
-    x = layer.traverse(x);
-    if (w <= 2) return x;
-    int h = x / (w/2);
-    return h*(w/2) + halves[h].traverse(x);
+    x = layer.traverse(x); // 1
+    if (w <= 2) return x;  // 2
+    int h = x / (w/2);     // 2
+    x = x % (w/2);         // 2
+    return h*(w/2) + halves[h].traverse(x); // 3
   }
 }
