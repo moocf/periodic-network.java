@@ -7,7 +7,7 @@
 // output of each Merger[K] is then combined with
 // a Balancer. When K is 1, Merger[2K] is a single
 // Balancer.
-class MergerNetwork implements CountingNetwork {
+class LayerNetwork implements CountingNetwork {
   CountingNetwork[] halves;
   CountingNetwork[] balancers;
   final int width;
@@ -15,10 +15,10 @@ class MergerNetwork implements CountingNetwork {
   // balancers: layers of Balancers
   // width: number of inputs/outputs
 
-  public MergerNetwork(int w) {
-    if (w > 2) halves = new MergerNetwork[] {
-      new MergerNetwork(w/2),
-      new MergerNetwork(w/2)
+  public LayerNetwork(int w) {
+    if (w > 2) halves = new LayerNetwork[] {
+      new LayerNetwork(w/2),
+      new LayerNetwork(w/2)
     };
     balancers = new Balancer[w/2];
     for (int i=0; i<w/2; i++)

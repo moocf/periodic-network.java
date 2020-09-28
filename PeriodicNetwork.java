@@ -5,7 +5,7 @@
 // inputs. Outputs of both Bitonic[K] are connected
 // directly to Merger[2K]. Bitonic[2] networks
 // consists of a single Balancer.
-class BitonicNetwork implements CountingNetwork {
+class PeriodicNetwork implements CountingNetwork {
   CountingNetwork[] halves;
   CountingNetwork merger;
   final int width;
@@ -13,12 +13,12 @@ class BitonicNetwork implements CountingNetwork {
   // merger: Merger[2K] connected to both Bitonic[K]
   // width: number of inputs/outputs
 
-  public BitonicNetwork(int w) {
-    if (w > 2) halves = new BitonicNetwork[] {
-      new BitonicNetwork(w/2),
-      new BitonicNetwork(w/2)
+  public PeriodicNetwork(int w) {
+    if (w > 2) halves = new PeriodicNetwork[] {
+      new PeriodicNetwork(w/2),
+      new PeriodicNetwork(w/2)
     };
-    merger = new MergerNetwork(w);
+    merger = new BlockNetwork(w);
     width = w;
   }
 

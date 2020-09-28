@@ -33,7 +33,7 @@ class Main {
 
   // Initialize bitonic network and counts.
   static void setup() {
-    bitonic = new BitonicNetwork(WIDTH);
+    bitonic = new PeriodicNetwork(WIDTH);
     counts = new AtomicInteger[WIDTH];
     for (int i=0; i<WIDTH; i++)
       counts[i] = new AtomicInteger(0);
