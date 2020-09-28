@@ -1,5 +1,5 @@
-Bitonic network is a balanced counting network that
-allows processes to decompose operations, like
+Periodic network is a balanced counting network
+that allows processes to decompose operations, like
 counting, and reduce memory contention.
 
 ```java
@@ -19,48 +19,51 @@ Balancer.traverse():
 ```
 
 ```java
-MergerNetwork:
-Each Merger[2K] consists of 2 Merger[K] networks
-followed by a layer of Balancers. The top
-Merger[K] takes even inputs from top-half and
-odd inputs from bottom-half. The bottom
-Merger[K] takes odd inputs from top-half and
-even inputs form bottom half. The respective
-output of each Merger[K] is then combined with
-a Balancer. When K is 1, Merger[2K] is a single
-Balancer.
+LayerNetwork:
+Each Layer[2K] consists K balancers connecting
+inputs i and W-1-i for i=[0, W/2). When K is 1
+Layer[2K] is a Balancer.
 
-MergerNetwork.traverse():
-1. Find connected Merger[K].
-2. Traverse connected Merger[K].
-3. Traverse connected balancer.
+LayerNetwork.traverse():
+1. Find connected Balancer.
+2. Traverse connected Balancer.
 ```
 
 ```java
-BitonicNetwork:
-Each Bitonic[2K] consists of 2 Bitonic[K]
-networks followed by a Merger[2K]. The top
-Bitonic[K] is connected to top-half inputs, and
-bottom Bitonic[K] is connected to bottom-half
-inputs. Outputs of both Bitonic[K] are connected
-directly to Merger[2K]. Bitonic[2] networks
-consists of a single Balancer.
+BlockNetwork:
+Each Block[2K] consists of Layer[2K] network
+followed by top and bottom Block[K] networks.
+Top Block[K] is connected to top-half of
+outputs of Layer[2K]. Bottom Block[K] is
+connected to the bottom-half. When K is 1,
+Block[2K] is a Balancer.
 
-BitonicNetwork.traverse():
-1. Find connected Bitonic[K].
-2. Traverse connected Bitonic[K].
-3. Traverse connected Merger[2K].
+BlockNetwork.traverse():
+1. Traverse Layer[2K].
+2. Find connected Block[K].
+3. Traverse connected Block[K].
 ```
 
-See [Balancer.java], [MergerNetwork.java],
-[BitonicNetwork.java] for code, [Main.java] for
+```java
+PeriodicNetwork:
+Each Periodic[K] consists of log2(K) Block[K]
+networks connected sequentially.
+
+PeriodicNetwork.traverse():
+1. Traverse all Block[2K]s sequentially.
+```
+
+See [Balancer.java], [LayerNetwork.java],
+[BlockNetwork.java], [PeriodicNetwork.java] for
+code, [Main.java] for
 test, and [repl.it] for output.
 
-[Balancer.java]: https://repl.it/@wolfram77/bitonic-network#Balancer.java
-[MergerNetwork.java]: https://repl.it/@wolfram77/bitonic-network#MergerNetwork.java
-[BitonicNetwork.java]: https://repl.it/@wolfram77/bitonic-network#BitonicNetwork.java
-[Main.java]: https://repl.it/@wolfram77/bitonic-network#Main.java
-[repl.it]: https://bitonic-network.wolfram77.repl.run
+[Balancer.java]: https://repl.it/@wolfram77/periodic-network#Balancer.java
+[LayerNetwork.java]: https://repl.it/@wolfram77/periodic-network#LayerNetwork.java
+[BlockNetwork.java]: https://repl.it/@wolfram77/periodic-network#BlockNetwork.java
+[PeriodicNetwork.java]: https://repl.it/@wolfram77/periodic-network#PeriodicNetwork.java
+[Main.java]: https://repl.it/@wolfram77/periodic-network#Main.java
+[repl.it]: https://periodic-network.wolfram77.repl.run
 
 
 ### references
